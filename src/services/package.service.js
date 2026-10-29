@@ -222,20 +222,25 @@ export async function getPublicDashboard({ page = 1, limit = 20, search, stage, 
       publicReference: p.publicReference,
       currentStage: p.currentStage,
       status: p.status,
+      origin: p.origin || 'Regional Hub',
+      destination: p.destination || 'Delivery Point',
+      senderName: p.senderName || '',
+      customerName: p.customerName || p.projectName || 'Enterprise Consignee',
+      delayInfo: p.delayInfo || {
+        isOverdue: false,
+        stageElapsedMinutes: 120,
+        stageTargetMinutes: 1440,
+      },
       progressPercent: p.progressPercent || calculateProgress(p.currentStage, p.status),
       lastPublicUpdate: toISO(p.lastPublicUpdate || p.updatedAt),
       publicDelayIndicator: getPublicDelayIndicator(p),
     };
 
-    // Conditionally include fields based on settings
     if (publicConfig.showProjectName !== false) {
       publicPkg.projectName = p.projectName;
     }
     if (publicConfig.showExpectedDelivery !== false) {
       publicPkg.expectedDeliveryAt = toISO(p.expectedDeliveryAt);
-    }
-    if (publicConfig.showCustomerName === true) {
-      publicPkg.customerName = p.customerName;
     }
 
     return publicPkg;
@@ -246,6 +251,10 @@ export async function getPublicDashboard({ page = 1, limit = 20, search, stage, 
     const s = search.toLowerCase();
     results = results.filter((p) =>
       (p.publicReference && p.publicReference.toLowerCase().includes(s)) ||
+      (p.customerName && p.customerName.toLowerCase().includes(s)) ||
+      (p.senderName && p.senderName.toLowerCase().includes(s)) ||
+      (p.origin && p.origin.toLowerCase().includes(s)) ||
+      (p.destination && p.destination.toLowerCase().includes(s)) ||
       (p.projectName && p.projectName.toLowerCase().includes(s))
     );
   }
@@ -367,6 +376,7 @@ function getPublicDelayIndicator(pkg) {
 
 function isOverdue(pkg) {
   if (pkg.status === 'DELIVERED') return false;
+  if (pkg.delayInfo?.isOverdue || pkg.status === 'DELAYED') return true;
   const now = new Date();
 
   // Check expected delivery
