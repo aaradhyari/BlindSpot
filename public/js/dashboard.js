@@ -86,7 +86,7 @@ function renderPackageRow(pkg) {
 
   let healthBadge = '<span class="badge badge-normal">● On Track</span>';
   if (isCompleted) {
-    healthBadge = '<span class="badge" style="background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle);">✓ Delivered</span>';
+    healthBadge = '<span class="badge" style="background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle);">Delivered</span>';
   } else if (isOverdue) {
     const overdueMins = pkg.delayInfo?.overdueMinutes || 120;
     healthBadge = `<span class="badge badge-critical" title="Overdue by ${formatDurationMinutes(overdueMins)}">▲ Overdue (+${formatDurationMinutes(overdueMins)})</span>`;
@@ -99,7 +99,7 @@ function renderPackageRow(pkg) {
     PACKAGING: '2 · Packaging',
     DOCUMENTATION: '3 · Dispatch',
     DELIVERY: '4 · Delivery',
-    COMPLETED: '✓ Fulfilled',
+    COMPLETED: 'Fulfilled',
   };
 
   const customerDisplay = pkg.customerName || pkg.projectName || pkg.senderName || 'Enterprise Client';

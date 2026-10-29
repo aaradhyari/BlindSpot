@@ -131,7 +131,7 @@ async function loadActions() {
     tbody.innerHTML = actions.map((act) => {
       let statusBadge = '<span class="badge badge-warning">OPEN</span>';
       if (act.status === 'RESOLVED') statusBadge = '<span class="badge badge-normal">RESOLVED</span>';
-      if (act.status === 'VERIFIED') statusBadge = '<span class="badge badge-normal" style="background:rgba(59,130,246,0.2);color:#93c5fd;">✓ VERIFIED</span>';
+      if (act.status === 'VERIFIED') statusBadge = '<span class="badge badge-normal" style="background:rgba(59,130,246,0.2);color:#93c5fd;">VERIFIED</span>';
       if (act.status === 'IN_PROGRESS') statusBadge = '<span class="badge badge-warning">IN PROGRESS</span>';
 
       let impact = '—';

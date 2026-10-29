@@ -59,7 +59,7 @@ function initFirebase() {
   }
 
   // 4. Fallback / Default project initialization (prevents FUNCTION_INVOCATION_FAILED)
-  console.warn('[firebase] ⚠ Running with project ID fallback. Ensure FIREBASE_SERVICE_ACCOUNT_JSON or credentials are set in Vercel environment variables.');
+  console.warn('[firebase] Running with project ID fallback. Ensure FIREBASE_SERVICE_ACCOUNT_JSON or credentials are set in Vercel environment variables.');
   return admin.initializeApp({
     projectId: env.FIREBASE_PROJECT_ID || 'blindspot-214d7',
   });

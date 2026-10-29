@@ -56,10 +56,10 @@ function renderPackageView(pkg) {
   const statusBadge = document.getElementById('display-status-badge');
   if (pkg.status === 'COMPLETED' || pkg.currentStage === 'COMPLETED') {
     statusBadge.className = 'badge badge-normal';
-    statusBadge.textContent = '✓ Fulfilled & Delivered';
+    statusBadge.textContent = 'Fulfilled & Delivered';
   } else if (isOverdue) {
     statusBadge.className = 'badge badge-critical';
-    statusBadge.textContent = `⚠ BOTTLENECK: OVERDUE (+${formatDurationMinutes(pkg.delayAnalysis?.overdueMinutes || pkg.delayInfo?.overdueMinutes)})`;
+    statusBadge.textContent = `BOTTLENECK: OVERDUE (+${formatDurationMinutes(pkg.delayAnalysis?.overdueMinutes || pkg.delayInfo?.overdueMinutes)})`;
   } else {
     statusBadge.className = 'badge badge-normal';
     statusBadge.textContent = '• On Track';

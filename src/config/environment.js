@@ -52,7 +52,7 @@ export function validateEnvironment() {
   if (!env.GOOGLE_APPLICATION_CREDENTIALS && !env.FIREBASE_PRIVATE_KEY) {
     warnings.push('No Firebase Admin credentials found. Set GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_PRIVATE_KEY.');
   }
-  warnings.forEach((w) => console.warn(`[env] ⚠  ${w}`));
+  warnings.forEach((w) => console.warn(`[env] ${w}`));
   return warnings.length === 0;
 }
 

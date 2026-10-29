@@ -6,7 +6,7 @@ Blindspot is an enterprise-grade Supply Chain Control Tower SaaS designed to tra
 
 ---
 
-## 🎯 The 6 Core Supply Chain Questions Answered by Blindspot
+## The 6 Core Supply Chain Questions Answered by Blindspot
 
 1. **Where is an order delayed?** Pinpoints the exact workflow station (`CONFIRMATION`, `PACKAGING`, `DOCUMENTATION`, or `DELIVERY`).
 2. **How long has it been delayed?** Calculates elapsed duration vs. stage SLA deadline down to the minute.
@@ -17,7 +17,7 @@ Blindspot is an enterprise-grade Supply Chain Control Tower SaaS designed to tra
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## Architecture & Technology Stack
 
 - **Runtime & Backend:** Node.js (v20+ LTS, ESM modules) + Express.js.
 - **Security:** `helmet` (Strict Content Security Policy), `cors`, `cookie-parser` (HTTP-only session cookies), and `express-rate-limit`.
@@ -28,7 +28,7 @@ Blindspot is an enterprise-grade Supply Chain Control Tower SaaS designed to tra
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 Blindspot/
@@ -80,7 +80,7 @@ Blindspot/
 
 ---
 
-## 🚀 Beginner-Friendly Quick Start Guide
+## Beginner-Friendly Quick Start Guide
 
 ### Step 1: Install Node.js LTS
 Download and install **Node.js 20+ LTS** from [nodejs.org](https://nodejs.org/).
@@ -175,7 +175,7 @@ http://localhost:3000
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run the automated test suite with the built-in Node.js runner:
 ```bash
@@ -191,7 +191,7 @@ npm test
 
 ---
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 - **Strict Content Security Policy (CSP):** Helmet configured with whitelisted origins for Google/Firebase endpoints.
 - **Session Protection:** HTTP-only, `SameSite=Strict`, `Secure` in production.
@@ -201,5 +201,5 @@ npm test
 
 ---
 
-## 📄 License
+## License
 UNLICENSED &bull; Proprietary Supply Chain Software.
