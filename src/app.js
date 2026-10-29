@@ -114,17 +114,51 @@ import fs from 'node:fs';
 
 // HTML View routes
 const viewsDir = path.join(rootDir, 'views');
+const wrapInViewShell = (raw) => {
+  const mainMatch = raw.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+  if (!mainMatch) return null;
+
+  const shellPath = path.join(viewsDir, 'shell.html');
+  if (!fs.existsSync(shellPath)) return null;
+  const shell = fs.readFileSync(shellPath, 'utf8');
+
+  const titleMatch = raw.match(/<title>([\s\S]*?)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].trim() : 'Blindspot';
+
+  // Remove scripts and stray toast containers from the captured content
+  let content = mainMatch[1]
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<div id="toast-container"[^>]*>[\s\S]*?<\/div>/gi, '');
+
+  const scripts = (raw.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) || []).join('\n');
+
+  return shell
+    .replace('{{TITLE}}', title)
+    .replace('{{CONTENT}}', content)
+    .replace('{{SCRIPTS}}', scripts);
+};
+
 const sendView = (viewName) => (req, res, next) => {
-  let targetPath = path.join(viewsDir, viewName);
-  if (!fs.existsSync(targetPath)) {
-    targetPath = path.join(process.cwd(), 'views', viewName);
-  }
-  res.sendFile(targetPath, (err) => {
-    if (err) {
-      console.error(`[views] Failed to send ${viewName}:`, err.message);
-      next(err);
+  const targetPath = fs.existsSync(path.join(viewsDir, viewName))
+    ? path.join(viewsDir, viewName)
+    : path.join(process.cwd(), 'views', viewName);
+
+  try {
+    const raw = fs.readFileSync(targetPath, 'utf8');
+
+    // Public board (dashboard) keeps its bespoke layout; other pages use the shared shell.
+    const useShell = viewName !== 'dashboard.html' && viewName !== 'login.html';
+    const wrapped = useShell ? wrapInViewShell(raw) : null;
+
+    if (wrapped) {
+      res.type('html').send(wrapped);
+    } else {
+      res.type('html').send(raw);
     }
-  });
+  } catch (err) {
+    console.error(`[views] Failed to send ${viewName}:`, err.message);
+    next(err);
+  }
 };
 
 app.get('/', sendView('dashboard.html'));
