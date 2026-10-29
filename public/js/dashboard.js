@@ -86,7 +86,7 @@ function renderPackageRow(pkg) {
 
   let healthBadge = '<span class="badge badge-normal">● On Track</span>';
   if (isCompleted) {
-    healthBadge = '<span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-secondary);border:1px solid var(--border-subtle);">✓ Delivered</span>';
+    healthBadge = '<span class="badge" style="background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle);">✓ Delivered</span>';
   } else if (isOverdue) {
     const overdueMins = pkg.delayInfo?.overdueMinutes || 120;
     healthBadge = `<span class="badge badge-critical" title="Overdue by ${formatDurationMinutes(overdueMins)}">▲ Overdue (+${formatDurationMinutes(overdueMins)})</span>`;
@@ -116,14 +116,14 @@ function renderPackageRow(pkg) {
         <span class="ref-code">${escapeHtml(pkg.publicReference || pkg.id)}</span>
       </td>
       <td>
-        <div style="font-weight: 600; color:#ffffff;">${escapeHtml(customerDisplay)}</div>
+        <div style="font-weight: 600; color:var(--text-main);">${escapeHtml(customerDisplay)}</div>
         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top:2px;">${escapeHtml(pkg.senderName || 'Standard Freight')}</div>
       </td>
       <td>
         <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem;">
           <span style="color:var(--text-secondary);">${escapeHtml(origin)}</span>
           <span style="color:var(--text-muted);">&#10142;</span>
-          <span style="color:#ffffff; font-weight:500;">${escapeHtml(dest)}</span>
+          <span style="color:var(--text-main); font-weight:500;">${escapeHtml(dest)}</span>
         </div>
       </td>
       <td>
@@ -134,7 +134,7 @@ function renderPackageRow(pkg) {
           <span>${formatDurationMinutes(stageAge)}</span>
           <span style="color:var(--text-muted);">/ ${formatDurationMinutes(targetMin)}</span>
         </div>
-        <div style="background:rgba(255,255,255,0.06); height:4px; border-radius:2px; overflow:hidden;">
+        <div style="background:var(--bg-surface-elevated); height:4px; border-radius:2px; overflow:hidden;">
           <div style="width:${isCompleted ? 100 : percent}%; background:${isCompleted ? 'var(--status-success)' : barColor}; height:100%;"></div>
         </div>
       </td>

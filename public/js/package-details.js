@@ -164,7 +164,7 @@ async function loadAuditHistory(pkgId) {
       <div style="position:relative; padding-left:1.5rem; border-left:2px solid var(--border-subtle); margin-bottom:1.25rem;">
         <div style="position:absolute; left:-7px; top:0; width:12px; height:12px; border-radius:50%; background:var(--accent-primary);"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong style="font-size:0.9rem; color:#ffffff;">${escapeHtml(h.action || 'Stage Event')}</strong>
+          <strong style="font-size:0.9rem; color:var(--text-main);">${escapeHtml(h.action || 'Stage Event')}</strong>
           <span style="font-size:0.75rem; color:var(--text-muted);">${formatDate(h.timestamp)}</span>
         </div>
         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">

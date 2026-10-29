@@ -5,28 +5,31 @@
    ========================================================================== */
 
 :root {
-  /* Surface colors */
-  --bg-app: #090d16;
-  --bg-surface: #0f172a;
-  --bg-surface-elevated: #151f38;
-  --bg-surface-hover: #1a2544;
-  --bg-input: #0a0f1d;
+  /* Minimal SaaS blue & white surfaces */
+  --bg-app: #f4f7fb;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f4f7fb;
+  --bg-surface-hover: #e8f0fc;
+  --bg-input: #ffffff;
+  --bg-secondary: #ffffff;
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-subtle: rgba(15, 23, 42, 0.10);
+  --border-strong: rgba(15, 23, 42, 0.18);
   --border-focus: #3b82f6;
 
   /* Typography colors */
-  --text-main: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-main: #0f172a;
+  --text-secondary: #475569;
   --text-muted: #64748b;
-  --text-disabled: #475569;
+  --text-disabled: #94a3b8;
 
   /* Primary Accent */
   --primary: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary-hover: #3b82f6;
   --primary-subtle: rgba(37, 99, 235, 0.12);
+  --accent-primary: #2563eb;
+  --accent-cyan: #3b82f6;
 
   /* Status Colors */
   --status-success: #10b981;
@@ -52,8 +55,9 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-dropdown: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-dropdown: 0 12px 28px -8px rgba(15, 23, 42, 0.20), 0 4px 10px -6px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 20px 45px -16px rgba(15, 23, 42, 0.22);
 
   --transition-fast: 0.12s ease-out;
   --transition-normal: 0.2s ease-out;
@@ -103,7 +107,7 @@ html, body {
 .brand-icon {
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -117,7 +121,7 @@ html, body {
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .status-indicator {
@@ -129,7 +133,7 @@ html, body {
   background: rgba(16, 185, 129, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: var(--radius-full);
-  color: #34d399;
+  color: #047857;
   font-weight: 500;
   margin-left: 0.5rem;
 }
@@ -159,14 +163,14 @@ html, body {
 }
 
 .nav-links a:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  background-color: var(--bg-surface-hover);
 }
 
 .nav-links a.active {
-  color: #ffffff;
-  background-color: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
+  color: var(--primary);
+  background-color: #eff6ff;
+  border: 1px solid rgba(37, 99, 235, 0.16);
 }
 
 .nav-user {
@@ -195,11 +199,11 @@ html, body {
   letter-spacing: 0.02em;
 }
 
-.role-pill.admin { background-color: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
-.role-pill.confirm { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
-.role-pill.pack { background-color: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
-.role-pill.doc { background-color: rgba(6, 182, 212, 0.15); color: #a5f3fc; border: 1px solid rgba(6, 182, 212, 0.3); }
-.role-pill.del { background-color: rgba(16, 185, 129, 0.15); color: #a7f3d0; border: 1px solid rgba(16, 185, 129, 0.3); }
+.role-pill.admin { background-color: rgba(37, 99, 235, 0.10); color: #1d4ed8; border: 1px solid rgba(37, 99, 235, 0.22); }
+.role-pill.confirm { background-color: rgba(59, 130, 246, 0.12); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.25); }
+.role-pill.pack { background-color: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.25); }
+.role-pill.doc { background-color: rgba(59, 130, 246, 0.10); color: #0369a1; border: 1px solid rgba(59, 130, 246, 0.22); }
+.role-pill.del { background-color: rgba(16, 185, 129, 0.10); color: #047857; border: 1px solid rgba(16, 185, 129, 0.22); }
 
 /* ==========================================================================
    CONTAINERS & HEADERS
@@ -224,7 +228,7 @@ html, body {
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .page-subtitle {
@@ -276,7 +280,7 @@ html, body {
 .kpi-value {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main);
   margin: 0.4rem 0 0.2rem;
   letter-spacing: -0.02em;
   font-family: var(--font-sans);
@@ -414,7 +418,7 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
-  background-color: rgba(10, 15, 29, 0.6);
+  background-color: var(--bg-surface-elevated);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -431,14 +435,14 @@ html, body {
 }
 
 .data-table tbody tr:hover {
-  background-color: var(--bg-surface-elevated);
+  background-color: var(--bg-surface-hover);
 }
 
 .ref-code {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 600;
-  color: #93c5fd;
+  color: #2563eb;
   background: rgba(59, 130, 246, 0.08);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
@@ -479,7 +483,7 @@ html, body {
 }
 
 .badge-stage {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--bg-surface-elevated);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
   font-weight: 500;
@@ -619,7 +623,7 @@ html, body {
 }
 
 .modal-close:hover {
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .modal-body {
@@ -632,7 +636,7 @@ html, body {
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;
-  background-color: rgba(10, 15, 29, 0.4);
+  background-color: var(--bg-surface-elevated);
 }
 
 .toast-container {
@@ -654,7 +658,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: #ffffff;
+  color: var(--text-main);
   box-shadow: var(--shadow-dropdown);
 }
 

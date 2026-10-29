@@ -455,6 +455,159 @@ export async function getStagePackages(stage, { page = 1, limit = 20, status } =
   };
 }
 
+// ── Stage convenience completion helpers ──────────────────────
+
+async function getPackageDoc(packageId) {
+  const doc = await packagesRef.doc(packageId).get();
+  if (!doc.exists) {
+    const err = new Error('Package not found.');
+    err.status = 404;
+    throw err;
+  }
+  return { id: doc.id, ...doc.data() };
+}
+
+async function ensureStageStarted(packageId, stage, actorUid, remarks) {
+  const pkg = await getPackageDoc(packageId);
+  const key = stageKey(stage);
+
+  if (pkg.currentStage !== stage) {
+    const err = new Error(`Package is currently in ${pkg.currentStage}, not ${stage}.`);
+    err.status = 400;
+    throw err;
+  }
+
+  const stageData = pkg[key] || {};
+  if (stageData.status === STATUS.COMPLETED) {
+    const err = new Error(`${stage} is already completed.`);
+    err.status = 400;
+    throw err;
+  }
+
+  if (stageData.status === STATUS.PENDING) {
+    await startStage(packageId, stage, actorUid, remarks || `${stage} started.`);
+  }
+  // IN_PROGRESS / DELAYED: already started — leave as-is
+  return pkg;
+}
+
+export async function completeConfirmation(packageId, actorUid, data = {}) {
+  await ensureStageStarted(packageId, STAGES.CONFIRMATION, actorUid, 'Confirmation started.');
+
+  const now = serverTimestamp();
+  const updates = { updatedAt: now, updatedBy: actorUid, lastPublicUpdate: now };
+  if (data.estimatedPackMinutes) {
+    updates['packaging.deadline'] = new Date(Date.now() + data.estimatedPackMinutes * 60 * 1000);
+  }
+  await packagesRef.doc(packageId).update(updates);
+
+  if (data.delayReason) {
+    await recordDelay(packageId, STAGES.CONFIRMATION, actorUid, {
+      reason: data.delayReason,
+      explanation: data.delayNotes,
+      remarks: data.remarks,
+    });
+  }
+
+  const remarks =
+    data.remarks || 'Customer order and SKU items verified; inventory available.';
+  return completeStage(packageId, STAGES.CONFIRMATION, actorUid, remarks);
+}
+
+export async function completePackaging(packageId, actorUid, data = {}) {
+  await ensureStageStarted(packageId, STAGES.PACKAGING, actorUid, 'Packaging started.');
+
+  const now = serverTimestamp();
+  const updates = { updatedAt: now, updatedBy: actorUid, lastPublicUpdate: now };
+
+  if (data.packagingType) updates['packaging.packagingType'] = data.packagingType;
+  if (typeof data.packageWeightKg === 'number') updates['packaging.packageWeightKg'] = data.packageWeightKg;
+  if (data.dimensions) {
+    updates['packaging.dimensions'] = {
+      lengthCm: data.dimensions.lengthCm ?? 0,
+      widthCm: data.dimensions.widthCm ?? 0,
+      heightCm: data.dimensions.heightCm ?? 0,
+    };
+  }
+  if (typeof data.qualityCheckPassed === 'boolean') {
+    updates['packaging.qualityCheckPassed'] = data.qualityCheckPassed;
+  }
+  if (Object.keys(updates).length > 3) {
+    await packagesRef.doc(packageId).update(updates);
+  }
+
+  if (data.delayReason) {
+    await recordDelay(packageId, STAGES.PACKAGING, actorUid, {
+      reason: data.delayReason,
+      explanation: data.delayNotes,
+      remarks: data.remarks,
+    });
+  }
+
+  const remarks = data.remarks || 'Packaging completed and quality checks passed.';
+  return completeStage(packageId, STAGES.PACKAGING, actorUid, remarks);
+}
+
+export async function completeDocumentation(packageId, actorUid, data = {}) {
+  await ensureStageStarted(packageId, STAGES.DOCUMENTATION, actorUid, 'Documentation started.');
+
+  // Update doc references
+  await updateDocumentation(packageId, actorUid, {
+    invoiceReference: data.invoiceNumber,
+    shippingDocReference: data.eWayBillNumber,
+    remarks: data.remarks,
+  });
+
+  await verifyDocumentation(packageId, actorUid, data.remarks || 'Documentation verified.');
+
+  const carrier = data.carrier || 'Carrier';
+  const trackingNumber = data.trackingNumber || 'N/A';
+  await recordDispatch(packageId, actorUid, {
+    transporterName: carrier,
+    trackingNumber,
+    remarks: data.remarks,
+  });
+
+  if (data.delayReason) {
+    await recordDelay(packageId, STAGES.DOCUMENTATION, actorUid, {
+      reason: data.delayReason,
+      explanation: data.delayNotes,
+      remarks: data.remarks,
+    });
+  }
+
+  const remarks = data.remarks || 'Documentation and dispatch completed.';
+  return completeStage(packageId, STAGES.DOCUMENTATION, actorUid, remarks);
+}
+
+export async function completeDelivery(packageId, actorUid, data = {}) {
+  await ensureStageStarted(packageId, STAGES.DELIVERY, actorUid, 'Delivery started.');
+
+  const now = serverTimestamp();
+  const updates = { updatedAt: now, updatedBy: actorUid, lastPublicUpdate: now };
+  if (data.recipientName) updates['delivery.recipientName'] = data.recipientName;
+  if (data.recipientPhone) updates['delivery.recipientPhone'] = data.recipientPhone;
+  if (data.deliveryNotes) updates['delivery.deliveryNotes'] = data.deliveryNotes;
+  const proofOfDelivery =
+    data.proofOfDelivery ||
+    [data.recipientName, data.deliveryNotes].filter(Boolean).join(' — ');
+  if (proofOfDelivery) updates['delivery.proofOfDelivery'] = proofOfDelivery;
+  if (Object.keys(updates).length > 3) {
+    await packagesRef.doc(packageId).update(updates);
+  }
+
+  if (data.delayReason) {
+    await recordDelay(packageId, STAGES.DELIVERY, actorUid, {
+      reason: data.delayReason,
+      explanation: data.delayNotes,
+      remarks: data.remarks,
+    });
+  }
+
+  const remarks = data.remarks || data.deliveryNotes || 'Delivery completed.';
+  return completeStage(packageId, STAGES.DELIVERY, actorUid, remarks);
+}
+
 export default {
   startStage,
   completeStage,
@@ -465,4 +618,8 @@ export default {
   recordDispatch,
   updateDeliveryStatus,
   getStagePackages,
+  completeConfirmation,
+  completePackaging,
+  completeDocumentation,
+  completeDelivery,
 };

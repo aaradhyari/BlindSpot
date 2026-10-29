@@ -8,7 +8,8 @@ import { authorizeStage } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
 import {
   startStageSchema, completeStageSchema, recordDelaySchema,
-  updateDeliverySchema, completeDeliverySchema, documentationSchema, dispatchSchema
+  updateDeliverySchema, completeDeliverySchema, documentationSchema, dispatchSchema,
+  confirmCompletionSchema, packagingCompletionSchema, documentationCompletionSchema, deliveryCompletionSchema
 } from '../validators/index.js';
 import { STAGES } from '../constants/index.js';
 import workflowService from '../services/workflow.service.js';
@@ -180,6 +181,51 @@ router.post('/:packageId/delivery/delay',
   async (req, res, next) => {
     try {
       const result = await workflowService.recordDelay(req.params.packageId, STAGES.DELIVERY, req.employee.uid, req.body);
+      res.json(result);
+    } catch (err) { next(err); }
+  }
+);
+
+// ── Convenience single-call stage completion (used by station UIs) ──
+router.post('/:packageId/confirm',
+  authorizeStage(STAGES.CONFIRMATION),
+  validate({ body: confirmCompletionSchema }),
+  async (req, res, next) => {
+    try {
+      const result = await workflowService.completeConfirmation(req.params.packageId, req.employee.uid, req.body);
+      res.json(result);
+    } catch (err) { next(err); }
+  }
+);
+
+router.post('/:packageId/pack',
+  authorizeStage(STAGES.PACKAGING),
+  validate({ body: packagingCompletionSchema }),
+  async (req, res, next) => {
+    try {
+      const result = await workflowService.completePackaging(req.params.packageId, req.employee.uid, req.body);
+      res.json(result);
+    } catch (err) { next(err); }
+  }
+);
+
+router.post('/:packageId/dispatch',
+  authorizeStage(STAGES.DOCUMENTATION),
+  validate({ body: documentationCompletionSchema }),
+  async (req, res, next) => {
+    try {
+      const result = await workflowService.completeDocumentation(req.params.packageId, req.employee.uid, req.body);
+      res.json(result);
+    } catch (err) { next(err); }
+  }
+);
+
+router.post('/:packageId/deliver',
+  authorizeStage(STAGES.DELIVERY),
+  validate({ body: deliveryCompletionSchema }),
+  async (req, res, next) => {
+    try {
+      const result = await workflowService.completeDelivery(req.params.packageId, req.employee.uid, req.body);
       res.json(result);
     } catch (err) { next(err); }
   }

@@ -95,7 +95,7 @@ function renderRootCauses(reasons) {
     return `
       <div style="margin-bottom: 1.25rem;">
         <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem; font-size:0.85rem;">
-          <span style="font-weight:600; color:#ffffff;">${escapeHtml(reason.replace(/_/g, ' '))}</span>
+          <span style="font-weight:600; color:var(--text-main);">${escapeHtml(reason.replace(/_/g, ' '))}</span>
           <span style="color:var(--text-secondary);">${count} occurrences (${percent}%)</span>
         </div>
         <div style="background:var(--bg-input); height:6px; border-radius:var(--radius-full); overflow:hidden;">

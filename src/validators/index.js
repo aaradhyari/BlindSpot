@@ -84,6 +84,49 @@ export const dispatchSchema = z.object({
   remarks: optionalTrimmed(2000),
 });
 
+// ── Stage completion convenience payloads ────────────────────
+export const confirmCompletionSchema = z.object({
+  orderConfirmed: z.boolean().optional(),
+  itemsVerified: z.boolean().optional(),
+  estimatedPackMinutes: z.number().int().min(1).max(10000).optional(),
+  delayReason: optionalTrimmed(200),
+  delayNotes: optionalTrimmed(2000),
+  remarks: optionalTrimmed(2000),
+});
+
+export const packagingCompletionSchema = z.object({
+  packagingType: optionalTrimmed(100),
+  packageWeightKg: z.number().positive().optional(),
+  dimensions: z.object({
+    lengthCm: z.number().min(0).optional(),
+    widthCm: z.number().min(0).optional(),
+    heightCm: z.number().min(0).optional(),
+  }).optional(),
+  qualityCheckPassed: z.boolean().optional(),
+  delayReason: optionalTrimmed(200),
+  delayNotes: optionalTrimmed(2000),
+  remarks: optionalTrimmed(2000),
+});
+
+export const documentationCompletionSchema = z.object({
+  carrier: optionalTrimmed(200),
+  trackingNumber: optionalTrimmed(100),
+  invoiceNumber: optionalTrimmed(100),
+  eWayBillNumber: optionalTrimmed(100),
+  delayReason: optionalTrimmed(200),
+  delayNotes: optionalTrimmed(2000),
+  remarks: optionalTrimmed(2000),
+});
+
+export const deliveryCompletionSchema = z.object({
+  recipientName: optionalTrimmed(200),
+  recipientPhone: optionalTrimmed(50),
+  deliveryNotes: optionalTrimmed(2000),
+  proofOfDelivery: optionalTrimmed(500),
+  delayReason: optionalTrimmed(200),
+  delayNotes: optionalTrimmed(2000),
+  remarks: optionalTrimmed(2000),
+});
 // ── Corrective Actions ───────────────────────────────────────
 export const createActionSchema = z.object({
   title: trimmedString(3, 200),
