@@ -110,10 +110,21 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+import fs from 'node:fs';
+
 // HTML View routes
 const viewsDir = path.join(rootDir, 'views');
-const sendView = (viewName) => (req, res) => {
-  res.sendFile(path.join(viewsDir, viewName));
+const sendView = (viewName) => (req, res, next) => {
+  let targetPath = path.join(viewsDir, viewName);
+  if (!fs.existsSync(targetPath)) {
+    targetPath = path.join(process.cwd(), 'views', viewName);
+  }
+  res.sendFile(targetPath, (err) => {
+    if (err) {
+      console.error(`[views] Failed to send ${viewName}:`, err.message);
+      next(err);
+    }
+  });
 };
 
 app.get('/', sendView('dashboard.html'));

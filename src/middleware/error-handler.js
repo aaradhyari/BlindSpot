@@ -25,13 +25,20 @@ export function errorHandler(err, req, res, _next) {
   });
 }
 
+import path from 'node:path';
+import fs from 'node:fs';
+
 /**
  * 404 handler for unmatched routes.
  */
 export function notFoundHandler(req, res) {
-  // If request accepts HTML, serve the 404 page
   if (req.accepts('html')) {
-    return res.status(404).sendFile('not-found.html', { root: 'views' });
+    const viewsDir = path.join(process.cwd(), 'views');
+    if (fs.existsSync(path.join(viewsDir, 'not-found.html'))) {
+      return res.status(404).sendFile('not-found.html', { root: viewsDir }, (err) => {
+        if (err) res.status(404).send('404 Not Found');
+      });
+    }
   }
   res.status(404).json({ error: 'Resource not found.' });
 }
