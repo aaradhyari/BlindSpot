@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 4: Final Delivery — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Station 4</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/confirm">Confirmation</a></li>
+      <li><a href="/pack">Packaging</a></li>
+      <li><a href="/doc">Dispatch</a></li>
+      <li><a href="/del" class="active">Delivery</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Stage 4: Last-Mile Delivery &amp; Handover</h1>
+        <p class="page-subtitle">Track final transit legs, verify recipient identity, capture proof of delivery, and finalize fulfillment lifecycle.</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-normal" style="font-size:0.9rem; padding:0.5rem 1rem;">
+          In Transit / Delivery: <strong id="station-count" style="margin-left:4px;">0</strong>
+        </span>
+        <button id="refresh-btn" class="btn btn-secondary btn-sm">Refresh</button>
+      </div>
+    </div>
+
+    <!-- Table of Packages at Delivery -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Customer &amp; Route</th>
+            <th>Time Elapsed / Target</th>
+            <th>Health Status</th>
+            <th>Intake Date</th>
+            <th>Stage Action</th>
+          </tr>
+        </thead>
+        <tbody id="stage-packages-body">
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              Connecting to Last-Mile delivery pipeline...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal for completing Delivery -->
+  <div id="action-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-pkg-ref" class="modal-title">Confirm Delivery Receipt</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="custom-stage-fields"></div>
+        <div id="delay-reason-section"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+        <button id="modal-submit-btn" class="btn btn-success">Record Delivery &amp; Close Package</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Controller Script -->
+  <script type="module">
+    import { initWorkflowStation } from '/js/workflow.js';
+
+    initWorkflowStation({
+      stage: 'DELIVERY',
+      role: 'DEL',
+      title: 'Last-Mile Delivery',
+      endpoint: 'deliver',
+      fieldsRenderer: (pkg) => `
+        <div class="form-group">
+          <label class="form-label" for="recipient-name">Recipient Name / Authorized Signatory <span class="required">*</span></label>
+          <input type="text" id="recipient-name" class="form-input" placeholder="e.g. John Doe (Procurement Manager)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="recipient-phone">Recipient Phone Number</label>
+          <input type="tel" id="recipient-phone" class="form-input" placeholder="+91 98765 43210">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="delivery-notes">Proof of Delivery Notes / Condition on Arrival</label>
+          <textarea id="delivery-notes" class="form-textarea" placeholder="Received in good condition, seal intact..."></textarea>
+        </div>
+      `,
+      collectPayload: () => {
+        const recipientName = document.getElementById('recipient-name')?.value?.trim();
+        const recipientPhone = document.getElementById('recipient-phone')?.value?.trim() || undefined;
+        const deliveryNotes = document.getElementById('delivery-notes')?.value?.trim() || undefined;
+
+        if (!recipientName) {
+          throw new Error('Recipient name is required for proof of delivery.');
+        }
+
+        return {
+          recipientName,
+          recipientPhone,
+          deliveryNotes,
+        };
+      },
+    });
+  </script>
+</body>
+</html>

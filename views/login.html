@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Blindspot Control Tower</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: radial-gradient(circle at 50% 20%, #17223b 0%, #0a0e17 80%);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-brand .brand-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .auth-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-icon">B</div>
+      <h1 class="auth-title">Blindspot Portal</h1>
+      <p class="auth-subtitle">Supply Chain Control Tower &amp; Bottleneck Radar</p>
+    </div>
+
+    <div id="error-alert" style="display: none; padding: 0.75rem 1rem; background-color: var(--status-critical-bg); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: var(--radius-sm); color: #fca5a5; font-size: 0.85rem; margin-bottom: 1.25rem;">
+    </div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="email">Work Email</label>
+        <input type="email" id="email" class="form-input" placeholder="operator@company.com" required autofocus autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem; padding: 0.75rem;">
+        Authenticate &rarr;
+      </button>
+    </form>
+
+    <div style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+      <a href="/" style="font-size: 0.85rem; color: var(--text-secondary);">&larr; Back to Public Radar</a>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module">
+    import { loginWithEmailPassword } from '/js/firebase-client.js';
+    import { showToast } from '/js/api.js';
+
+    const loginForm = document.getElementById('login-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorAlert = document.getElementById('error-alert');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorAlert.style.display = 'none';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying credentials...';
+
+      try {
+        const result = await loginWithEmailPassword(email, password);
+        showToast('Login successful! Redirecting...', 'success');
+
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get('redirect');
+        const destination = redirectParam || result.redirect || '/';
+
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 600);
+      } catch (err) {
+        errorAlert.textContent = err.message || 'Authentication failed. Please verify email and password.';
+        errorAlert.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Authenticate →';
+      }
+    });
+  </script>
+</body>
+</html>

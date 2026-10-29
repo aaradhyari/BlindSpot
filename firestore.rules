@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check user role via token custom claims
+    function hasRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+
+    function isAdmin() {
+      return hasRole('ADMIN');
+    }
+
+    // Default deny all documents
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Packages collection
+    match /packages/{packageId} {
+      // Authenticated employees can read packages
+      allow read: if isAuthenticated();
+      // Server-side Admin SDK mediates writes, but direct client writes restricted by role
+      allow create: if hasRole('ADMIN') || hasRole('CONFIRM');
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+
+      // Audit history subcollection
+      match /history/{historyId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+    }
+
+    // Employees collection
+    match /employees/{employeeId} {
+      // Authenticated users can read employee profiles
+      allow read: if isAuthenticated();
+      // Only admins can create or modify employee profiles
+      allow write: if isAdmin();
+    }
+
+    // Settings collection
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Corrective actions collection
+    match /actions/{actionId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Reports collection
+    match /reports/{reportId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

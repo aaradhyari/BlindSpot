@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corrective Actions &amp; Remediation — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Action Tracker</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+      <li><a href="/employees">Employees</a></li>
+      <li><a href="/reports">Reports</a></li>
+      <li><a href="/actions" class="active">Corrective Actions</a></li>
+      <li><a href="/settings">Settings</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Supply Chain Bottleneck Corrective Actions</h1>
+        <p class="page-subtitle">Track systemic process interventions and verify whether corrective initiatives quantitatively reduced delay rates.</p>
+      </div>
+      <div class="header-actions">
+        <button id="export-actions-csv" class="btn btn-secondary btn-sm">Export CSV</button>
+        <button id="create-action-btn" class="btn btn-primary">
+          <span>+</span> Log Corrective Action
+        </button>
+      </div>
+    </div>
+
+    <!-- Table of Corrective Actions -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Initiative Title &amp; Scope</th>
+            <th>Target Stage &amp; Root Cause</th>
+            <th>Status</th>
+            <th>Measured Impact (&Delta; Delay Rate)</th>
+            <th>Target Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="actions-table-body">
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              Loading corrective initiatives...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal: Create Corrective Action -->
+  <div id="action-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Log Systemic Corrective Action</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <form id="action-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="act-title">Action Title <span class="required">*</span></label>
+            <input type="text" id="act-title" class="form-input" placeholder="e.g. Integrate Automated E-Way Bill API directly to ERP" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="act-stage">Target Workflow Stage <span class="required">*</span></label>
+              <select id="act-stage" class="form-select" required>
+                <option value="DOCUMENTATION">DOCUMENTATION (Stage 3)</option>
+                <option value="CONFIRMATION">CONFIRMATION (Stage 1)</option>
+                <option value="PACKAGING">PACKAGING (Stage 2)</option>
+                <option value="DELIVERY">DELIVERY (Stage 4)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="act-type">Action Classification <span class="required">*</span></label>
+              <select id="act-type" class="form-select" required>
+                <option value="PROCESS_CHANGE">Process Change / Workflow Optimization</option>
+                <option value="SUPPLIER_ESCALATION">Supplier Escalation &amp; SLA Enforcement</option>
+                <option value="EQUIPMENT_UPGRADE">Equipment Upgrade / Tooling</option>
+                <option value="STAFF_TRAINING">Staff Training &amp; Upskilling</option>
+                <option value="SYSTEM_AUTOMATION">Software Automation &amp; API Integration</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="act-reason">Addressed Delay Root Cause <span class="required">*</span></label>
+            <select id="act-reason" class="form-select" required></select>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="act-owner">Process Owner / Responsible Lead <span class="required">*</span></label>
+              <input type="text" id="act-owner" class="form-input" placeholder="e.g. VP Logistics Ops" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="act-target-date">Target Completion Date <span class="required">*</span></label>
+              <input type="date" id="act-target-date" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="act-description">Problem Statement &amp; Solution Implementation</label>
+            <textarea id="act-description" class="form-textarea" placeholder="Describe root cause identified and explicit operational steps taken to eliminate recurring delays..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="modal-submit-btn" class="btn btn-primary">Create Corrective Action</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Verify Impact ("Did it improve performance?") -->
+  <div id="verify-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Verify Remediation Impact</h2>
+        <button id="verify-close-btn" class="modal-close">&times;</button>
+      </div>
+      <form id="verify-form">
+        <div class="modal-body">
+          <p style="font-size:0.875rem; color:var(--text-secondary); margin-bottom:1rem;">
+            Verification for: <strong id="verify-act-title" style="color:#ffffff;">Action</strong>
+          </p>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="ver-pre-rate">Pre-Action Delay Rate (%) <span class="required">*</span></label>
+              <input type="number" step="0.1" id="ver-pre-rate" class="form-input" placeholder="e.g. 42.5" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ver-post-rate">Post-Action Delay Rate (%) <span class="required">*</span></label>
+              <input type="number" step="0.1" id="ver-post-rate" class="form-input" placeholder="e.g. 14.2" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ver-notes">Performance Verification Notes</label>
+            <textarea id="ver-notes" class="form-textarea" placeholder="Observed metric shift over 30-day monitoring window..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="verify-cancel-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="verify-submit-btn" class="btn btn-success">Save Verification</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module">
+    import { initActions } from '/js/actions.js';
+    document.addEventListener('DOMContentLoaded', initActions);
+  </script>
+</body>
+</html>

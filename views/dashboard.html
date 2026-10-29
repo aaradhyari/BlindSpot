@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blindspot — Supply Chain Control Tower</title>
+  <meta name="description" content="Real-time Supply Chain Bottleneck Detection and Management SaaS. Track delays, identify root causes, and optimize fulfillment.">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Control Tower</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/" class="active">Public Board</a></li>
+      <li><a href="/confirm">Confirmation</a></li>
+      <li><a href="/pack">Packaging</a></li>
+      <li><a href="/doc">Dispatch</a></li>
+      <li><a href="/del">Delivery</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+    </ul>
+
+    <div id="nav-user-area" class="nav-user">
+      <a href="/login" class="btn btn-primary btn-sm">Employee Sign In</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Supply Chain Flow &amp; Bottleneck Radar</h1>
+        <p class="page-subtitle">Continuous visibility into active orders, transit milestones, and fulfillment delays.</p>
+      </div>
+      <div class="header-actions">
+        <button id="refresh-btn" class="btn btn-secondary btn-sm">
+          <span>&#x21bb;</span> Refresh Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Live KPI Summary Cards -->
+    <div class="grid-kpi">
+      <div class="kpi-card success">
+        <div class="kpi-label">Active Orders</div>
+        <div id="kpi-total" class="kpi-value">—</div>
+        <div class="kpi-sub">In fulfillment pipeline</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">On Track</div>
+        <div id="kpi-ontrack" class="kpi-value" style="color: var(--status-normal);">—</div>
+        <div class="kpi-sub">Within SLA target deadline</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">Warning Zone</div>
+        <div id="kpi-warning" class="kpi-value" style="color: var(--status-warning);">—</div>
+        <div class="kpi-sub">Approaching SLA breach (&lt; 6h)</div>
+      </div>
+      <div class="kpi-card critical">
+        <div class="kpi-label">Bottlenecks &amp; Overdue</div>
+        <div id="kpi-overdue" class="kpi-value" style="color: var(--status-critical);">—</div>
+        <div class="kpi-sub">Exceeded SLA stage deadline</div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+      <div style="display: flex; gap: 0.75rem; flex: 1; min-width: 280px;">
+        <input type="text" id="search-input" class="form-input" placeholder="Search by reference, sender, or destination...">
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <select id="stage-filter" class="form-select" style="width: auto;">
+          <option value="">All Stages</option>
+          <option value="CONFIRMATION">1. Confirmation</option>
+          <option value="PACKAGING">2. Packaging</option>
+          <option value="DOCUMENTATION">3. Documentation</option>
+          <option value="DELIVERY">4. Delivery</option>
+        </select>
+        <select id="health-filter" class="form-select" style="width: auto;">
+          <option value="">All Health Statuses</option>
+          <option value="overdue">Overdue Only</option>
+          <option value="ontrack">On Track Only</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Packages Table -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Customer / Order</th>
+            <th>Current Stage</th>
+            <th>Stage Age / SLA</th>
+            <th>Health Status</th>
+            <th>Destination</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="packages-table-body">
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              Loading supply chain telemetry...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem;">
+      <div id="pagination-info" style="color: var(--text-muted); font-size: 0.85rem;">Showing 0 packages</div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="prev-page-btn" class="btn btn-secondary btn-sm" disabled>Previous</button>
+        <button id="next-page-btn" class="btn btn-secondary btn-sm" disabled>Next</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

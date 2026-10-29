@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 1: Confirmation — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Station 1</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/confirm" class="active">Confirmation</a></li>
+      <li><a href="/pack">Packaging</a></li>
+      <li><a href="/doc">Dispatch</a></li>
+      <li><a href="/del">Delivery</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Stage 1: Order Confirmation</h1>
+        <p class="page-subtitle">Verify inventory availability, confirm customer order specifications, and initiate fulfillment queue.</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-normal" style="font-size:0.9rem; padding:0.5rem 1rem;">
+          Pending in Queue: <strong id="station-count" style="margin-left:4px;">0</strong>
+        </span>
+        <button id="refresh-btn" class="btn btn-secondary btn-sm">Refresh</button>
+      </div>
+    </div>
+
+    <!-- Table of Packages at this stage -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Customer &amp; Route</th>
+            <th>Time Elapsed / Target</th>
+            <th>Health Status</th>
+            <th>Intake Date</th>
+            <th>Stage Action</th>
+          </tr>
+        </thead>
+        <tbody id="stage-packages-body">
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              Connecting to Confirmation pipeline...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal for completing Confirmation -->
+  <div id="action-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-pkg-ref" class="modal-title">Confirm Order</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="custom-stage-fields"></div>
+        <div id="delay-reason-section"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+        <button id="modal-submit-btn" class="btn btn-primary">Confirm &amp; Advance to Packaging</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Controller Script -->
+  <script type="module">
+    import { initWorkflowStation } from '/js/workflow.js';
+
+    initWorkflowStation({
+      stage: 'CONFIRMATION',
+      role: 'CONFIRM',
+      title: 'Order Confirmation',
+      endpoint: 'confirm',
+      fieldsRenderer: (pkg) => `
+        <div style="background-color: var(--bg-card); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+          <div style="font-size: 0.85rem; color: var(--text-muted);">Customer: <strong>${pkg.customerName || 'Standard'}</strong></div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">From: <strong>${pkg.origin}</strong> &rarr; To: <strong>${pkg.destination}</strong></div>
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+            <input type="checkbox" id="chk-order-confirmed" checked>
+            <span style="font-size:0.9rem; font-weight:600;">Customer Order &amp; SKU Items Verified</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+            <input type="checkbox" id="chk-inventory-available" checked>
+            <span style="font-size:0.9rem; font-weight:600;">Inventory Available in Stock</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="est-pack-minutes">Estimated Packaging Duration (Minutes)</label>
+          <input type="number" id="est-pack-minutes" class="form-input" value="60" min="1" max="10000">
+        </div>
+      `,
+      collectPayload: () => {
+        const orderConfirmed = document.getElementById('chk-order-confirmed')?.checked;
+        const itemsVerified = document.getElementById('chk-inventory-available')?.checked;
+        const estMinutes = parseInt(document.getElementById('est-pack-minutes')?.value, 10) || 60;
+
+        if (!orderConfirmed || !itemsVerified) {
+          throw new Error('Please verify both order verification and inventory checkboxes.');
+        }
+
+        return {
+          orderConfirmed: true,
+          itemsVerified: true,
+          estimatedPackMinutes: estMinutes,
+        };
+      },
+    });
+  </script>
+</body>
+</html>

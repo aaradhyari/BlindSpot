@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 3: Documentation &amp; Dispatch — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Station 3</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/confirm">Confirmation</a></li>
+      <li><a href="/pack">Packaging</a></li>
+      <li><a href="/doc" class="active">Dispatch</a></li>
+      <li><a href="/del">Delivery</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Stage 3: Documentation &amp; Carrier Dispatch</h1>
+        <p class="page-subtitle">Generate shipping manifests, attach regulatory e-way bills, assign logistics carriers, and handover for transit.</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-normal" style="font-size:0.9rem; padding:0.5rem 1rem;">
+          Awaiting Dispatch: <strong id="station-count" style="margin-left:4px;">0</strong>
+        </span>
+        <button id="refresh-btn" class="btn btn-secondary btn-sm">Refresh</button>
+      </div>
+    </div>
+
+    <!-- Table of Packages at Documentation -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Customer &amp; Route</th>
+            <th>Time Elapsed / Target</th>
+            <th>Health Status</th>
+            <th>Intake Date</th>
+            <th>Stage Action</th>
+          </tr>
+        </thead>
+        <tbody id="stage-packages-body">
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              Connecting to Dispatch pipeline...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal for completing Dispatch -->
+  <div id="action-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-pkg-ref" class="modal-title">Documentation &amp; Dispatch</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="custom-stage-fields"></div>
+        <div id="delay-reason-section"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+        <button id="modal-submit-btn" class="btn btn-primary">Dispatch &amp; Handover to Delivery</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Controller Script -->
+  <script type="module">
+    import { initWorkflowStation } from '/js/workflow.js';
+
+    initWorkflowStation({
+      stage: 'DOCUMENTATION',
+      role: 'DOC',
+      title: 'Documentation & Dispatch',
+      endpoint: 'dispatch',
+      fieldsRenderer: (pkg) => `
+        <div class="form-group">
+          <label class="form-label" for="carrier-select">Logistics Carrier <span class="required">*</span></label>
+          <select id="carrier-select" class="form-select" required>
+            <option value="BlueDart Express">BlueDart Express</option>
+            <option value="Delhivery Freight">Delhivery Freight</option>
+            <option value="DHL Express Cargo">DHL Express Cargo</option>
+            <option value="FedEx SupplyChain">FedEx SupplyChain</option>
+            <option value="DTDC Express Cargo">DTDC Express Cargo</option>
+            <option value="Internal Dedicated Fleet">Internal Dedicated Fleet</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="tracking-num">Carrier AWB / Tracking # <span class="required">*</span></label>
+            <input type="text" id="tracking-num" class="form-input" placeholder="AWB-98472918" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="invoice-num">Tax Invoice Number <span class="required">*</span></label>
+            <input type="text" id="invoice-num" class="form-input" placeholder="INV-2026-8941" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="eway-num">E-Way Bill Number (GST/Regulatory)</label>
+          <input type="text" id="eway-num" class="form-input" placeholder="EWB-128491028491">
+        </div>
+      `,
+      collectPayload: () => {
+        const carrier = document.getElementById('carrier-select')?.value;
+        const trackingNumber = document.getElementById('tracking-num')?.value?.trim();
+        const invoiceNumber = document.getElementById('invoice-num')?.value?.trim();
+        const eWayBillNumber = document.getElementById('eway-num')?.value?.trim() || undefined;
+
+        if (!carrier || !trackingNumber || !invoiceNumber) {
+          throw new Error('Carrier name, Tracking/AWB number, and Invoice number are required.');
+        }
+
+        return {
+          carrier,
+          trackingNumber,
+          invoiceNumber,
+          eWayBillNumber,
+        };
+      },
+    });
+  </script>
+</body>
+</html>

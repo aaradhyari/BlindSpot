@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Admin Console</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/admin" class="active">Admin Hub</a></li>
+      <li><a href="/employees">Employees</a></li>
+      <li><a href="/reports">Reports</a></li>
+      <li><a href="/actions">Corrective Actions</a></li>
+      <li><a href="/settings">Settings</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Executive Supply Chain Control Center</h1>
+        <p class="page-subtitle">End-to-end administration, new package intake, and bottleneck intervention.</p>
+      </div>
+      <div class="header-actions">
+        <button id="open-intake-btn" class="btn btn-primary">
+          <span>+</span> Create New Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin KPI Overview -->
+    <div class="grid-kpi">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Fleet Pipeline</div>
+        <div id="kpi-admin-total" class="kpi-value">—</div>
+        <div class="kpi-sub">Total packages in transit</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">SLA Warning Watch</div>
+        <div id="kpi-admin-warning" class="kpi-value" style="color:var(--status-warning);">—</div>
+        <div class="kpi-sub">Approaching threshold</div>
+      </div>
+      <div class="kpi-card critical">
+        <div class="kpi-label">Active Bottlenecks</div>
+        <div id="kpi-admin-overdue" class="kpi-value" style="color:var(--status-critical);">—</div>
+        <div class="kpi-sub">Immediate intervention required</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-label">On-Time Reliability</div>
+        <div id="kpi-admin-reliability" class="kpi-value" style="color:var(--status-normal);">—</div>
+        <div class="kpi-sub">On-track fulfillment rate</div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Tiles -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+      <a href="/employees" class="kpi-card" style="text-decoration:none;">
+        <div style="font-weight:700; color:#ffffff; font-size:1.1rem; margin-bottom:0.25rem;">&#128101; Employees &amp; Roles</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary);">Manage staff permissions and station assignments.</div>
+      </a>
+      <a href="/reports" class="kpi-card" style="text-decoration:none;">
+        <div style="font-weight:700; color:#ffffff; font-size:1.1rem; margin-bottom:0.25rem;">&#128202; Bottleneck Analytics</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary);">Root-cause Pareto analysis and CSV exports.</div>
+      </a>
+      <a href="/actions" class="kpi-card" style="text-decoration:none;">
+        <div style="font-weight:700; color:#ffffff; font-size:1.1rem; margin-bottom:0.25rem;">&#128737; Corrective Actions</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary);">Track process fixes and measure improvement.</div>
+      </a>
+      <a href="/settings" class="kpi-card" style="text-decoration:none;">
+        <div style="font-weight:700; color:#ffffff; font-size:1.1rem; margin-bottom:0.25rem;">&#9881; SLA Policies</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary);">Configure stage duration thresholds and privacy.</div>
+      </a>
+    </div>
+
+    <!-- Package Management Table -->
+    <div class="table-container">
+      <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <h2 style="font-size:1.1rem; font-weight:700;">Live Consignments Overview</h2>
+        <div style="display:flex; gap:0.5rem;">
+          <input type="text" id="admin-search" class="form-input" placeholder="Search reference, customer..." style="width:260px;">
+          <button id="admin-refresh" class="btn btn-secondary btn-sm">Refresh</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Customer &amp; Route</th>
+            <th>Stage</th>
+            <th>Health Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-packages-body">
+          <tr>
+            <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">
+              Loading system consignments...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal: Create New Package Intake -->
+  <div id="intake-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">New Order Consignment Intake</h2>
+        <button id="close-intake-btn" class="modal-close">&times;</button>
+      </div>
+      <form id="intake-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="inp-reference">Public Reference Code (Leave blank for auto-generate)</label>
+            <input type="text" id="inp-reference" class="form-input" placeholder="e.g. BLIND-2026-9001">
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="inp-sender">Sender / Vendor Name <span class="required">*</span></label>
+              <input type="text" id="inp-sender" class="form-input" placeholder="Apex Industrial Goods" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-customer">Customer / Recipient Org <span class="required">*</span></label>
+              <input type="text" id="inp-customer" class="form-input" placeholder="Metro Retail Store" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="inp-origin">Origin Facility <span class="required">*</span></label>
+              <input type="text" id="inp-origin" class="form-input" placeholder="Warehouse Hub Alpha" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-destination">Destination Facility <span class="required">*</span></label>
+              <input type="text" id="inp-destination" class="form-input" placeholder="Tech City Terminal" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="inp-priority">Order Priority</label>
+              <select id="inp-priority" class="form-select">
+                <option value="MEDIUM">Medium Priority</option>
+                <option value="LOW">Low Priority</option>
+                <option value="HIGH">High Priority</option>
+                <option value="CRITICAL">Critical Priority</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-delivery-date">Expected Delivery Date <span class="required">*</span></label>
+              <input type="date" id="inp-delivery-date" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inp-notes">Special Instructions / Dispatch Notes</label>
+            <textarea id="inp-notes" class="form-textarea" placeholder="Handle with care, maintain room temperature..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel-intake-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="submit-intake-btn" class="btn btn-primary">Intake Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Admin Controller -->
+  <script type="module">
+    import { apiRequest, escapeHtml, formatDate, formatDurationMinutes, showToast } from '/js/api.js';
+    import { requireAuth } from '/js/auth.js';
+
+    let user;
+
+    async function initAdmin() {
+      user = await requireAuth(['ADMIN']);
+      if (!user) return;
+
+      loadAdminData();
+
+      // Set default delivery date to today + 5 days
+      const d = new Date();
+      d.setDate(d.getDate() + 5);
+      document.getElementById('inp-delivery-date').value = d.toISOString().split('T')[0];
+
+      // Setup event listeners
+      document.getElementById('open-intake-btn')?.addEventListener('click', () => {
+        document.getElementById('intake-modal')?.classList.add('open');
+      });
+
+      document.getElementById('close-intake-btn')?.addEventListener('click', closeIntake);
+      document.getElementById('cancel-intake-btn')?.addEventListener('click', closeIntake);
+
+      document.getElementById('admin-refresh')?.addEventListener('click', loadAdminData);
+
+      document.getElementById('intake-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submit-intake-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering order...';
+
+        const payload = {
+          publicReference: document.getElementById('inp-reference').value.trim() || undefined,
+          senderName: document.getElementById('inp-sender').value.trim(),
+          customerName: document.getElementById('inp-customer').value.trim(),
+          origin: document.getElementById('inp-origin').value.trim(),
+          destination: document.getElementById('inp-destination').value.trim(),
+          priority: document.getElementById('inp-priority').value,
+          expectedDeliveryDate: new Date(document.getElementById('inp-delivery-date').value).toISOString(),
+          notes: document.getElementById('inp-notes').value.trim() || undefined,
+        };
+
+        try {
+          const created = await apiRequest('/api/packages', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          });
+
+          showToast(`Order ${created.publicReference} registered successfully!`, 'success');
+          closeIntake();
+          document.getElementById('intake-form').reset();
+          loadAdminData();
+        } catch (err) {
+          showToast(err.message, 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Intake Order';
+        }
+      });
+    }
+
+    function closeIntake() {
+      document.getElementById('intake-modal')?.classList.remove('open');
+    }
+
+    async function loadAdminData() {
+      const search = document.getElementById('admin-search')?.value?.trim();
+      const params = new URLSearchParams({ limit: '50' });
+      if (search) params.set('search', search);
+
+      try {
+        const result = await apiRequest(`/api/packages?${params.toString()}`);
+        const packages = result.data || [];
+
+        // Calculate KPI
+        const total = packages.length;
+        let overdueCount = 0;
+        let warningCount = 0;
+
+        packages.forEach((p) => {
+          if (p.delayInfo?.isOverdue) overdueCount++;
+          else if ((p.delayInfo?.stageTargetMinutes || 1440) - (p.delayInfo?.stageElapsedMinutes || 0) < 360) warningCount++;
+        });
+
+        document.getElementById('kpi-admin-total').textContent = total;
+        document.getElementById('kpi-admin-overdue').textContent = overdueCount;
+        document.getElementById('kpi-admin-warning').textContent = warningCount;
+        const reliability = total > 0 ? Math.round(((total - overdueCount) / total) * 100) : 100;
+        document.getElementById('kpi-admin-reliability').textContent = `${reliability}%`;
+
+        // Render table
+        const tbody = document.getElementById('admin-packages-body');
+        if (packages.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">
+                No packages found. Click '+ Create New Order' above to intake your first consignment.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = packages.map((pkg) => {
+          const isOverdue = pkg.delayInfo?.isOverdue;
+          let health = '<span class="badge badge-normal">On Track</span>';
+          if (isOverdue) {
+            health = `<span class="badge badge-critical">Overdue (+${formatDurationMinutes(pkg.delayInfo.overdueMinutes)})</span>`;
+          }
+
+          return `
+            <tr>
+              <td><strong class="ref-code">${escapeHtml(pkg.publicReference)}</strong></td>
+              <td>
+                <div style="font-weight:600;">${escapeHtml(pkg.customerName || pkg.senderName)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(pkg.origin)} &rarr; ${escapeHtml(pkg.destination)}</div>
+              </td>
+              <td><span class="badge badge-stage">${escapeHtml(pkg.currentStage)}</span></td>
+              <td>${health}</td>
+              <td>${formatDate(pkg.createdAt)}</td>
+              <td>
+                <a href="/packages/${encodeURIComponent(pkg.id || pkg.publicReference)}" class="btn btn-secondary btn-sm">
+                  Deep Dive &rarr;
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initAdmin);
+  </script>
+</body>
+</html>

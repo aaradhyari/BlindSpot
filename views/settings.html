@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLA Policies &amp; Settings — Blindspot</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon">B</div>
+      <span class="brand-title">Blindspot</span>
+      <span class="brand-tag">Settings</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Public Board</a></li>
+      <li><a href="/admin">Admin Hub</a></li>
+      <li><a href="/employees">Employees</a></li>
+      <li><a href="/reports">Reports</a></li>
+      <li><a href="/actions">Corrective Actions</a></li>
+      <li><a href="/settings" class="active">Settings</a></li>
+    </ul>
+    <div id="nav-user-area" class="nav-user"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">SLA Stage Policies &amp; System Configuration</h1>
+        <p class="page-subtitle">Define maximum allowed fulfillment durations, early warning thresholds, and customer visibility rules.</p>
+      </div>
+      <div class="header-actions">
+        <button id="save-settings-btn" class="btn btn-primary">
+          Save Configuration
+        </button>
+      </div>
+    </div>
+
+    <form id="settings-form">
+      <!-- Stage SLA Durations -->
+      <div class="kpi-card" style="padding: 1.75rem; margin-bottom: 2rem;">
+        <h2 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Workflow Stage SLA Targets (Minutes)</h2>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+          
+          <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#ffffff;">1. Confirmation Stage</h3>
+            <div class="form-group">
+              <label class="form-label">Target Duration (Minutes)</label>
+              <input type="number" id="sla-confirm-target" class="form-input" min="1" value="1440">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Warning Threshold (Minutes before target)</label>
+              <input type="number" id="sla-confirm-warning" class="form-input" min="1" value="360">
+            </div>
+          </div>
+
+          <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#ffffff;">2. Packaging Stage</h3>
+            <div class="form-group">
+              <label class="form-label">Target Duration (Minutes)</label>
+              <input type="number" id="sla-pack-target" class="form-input" min="1" value="2880">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Warning Threshold (Minutes before target)</label>
+              <input type="number" id="sla-pack-warning" class="form-input" min="1" value="720">
+            </div>
+          </div>
+
+          <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#ffffff;">3. Documentation Stage</h3>
+            <div class="form-group">
+              <label class="form-label">Target Duration (Minutes)</label>
+              <input type="number" id="sla-doc-target" class="form-input" min="1" value="1440">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Warning Threshold (Minutes before target)</label>
+              <input type="number" id="sla-doc-warning" class="form-input" min="1" value="360">
+            </div>
+          </div>
+
+          <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#ffffff;">4. Delivery Stage</h3>
+            <div class="form-group">
+              <label class="form-label">Target Duration (Minutes)</label>
+              <input type="number" id="sla-del-target" class="form-input" min="1" value="4320">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Warning Threshold (Minutes before target)</label>
+              <input type="number" id="sla-del-warning" class="form-input" min="1" value="1440">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Public Privacy & General Preferences -->
+      <div class="kpi-card" style="padding: 1.75rem;">
+        <h2 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Public Radar Privacy &amp; Regional Settings</h2>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div>
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="pref-show-customer">
+                <span style="font-size:0.9rem; font-weight:600;">Show Customer Names on Public Radar</span>
+              </label>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">If unchecked, customer names are masked for commercial confidentiality.</p>
+            </div>
+
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="pref-show-expected" checked>
+                <span style="font-size:0.9rem; font-weight:600;">Show Target Delivery Dates on Public Radar</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label class="form-label" for="pref-timezone">Operating Timezone</label>
+              <select id="pref-timezone" class="form-select">
+                <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
+                <option value="UTC">UTC / GMT</option>
+                <option value="America/New_York">America/New_York (EST/EDT)</option>
+                <option value="Europe/London">Europe/London (GMT/BST)</option>
+                <option value="Asia/Singapore">Asia/Singapore (SGT +8:00)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Settings Controller Script -->
+  <script type="module">
+    import { apiRequest, showToast } from '/js/api.js';
+    import { requireAuth } from '/js/auth.js';
+
+    async function initSettings() {
+      const user = await requireAuth(['ADMIN']);
+      if (!user) return;
+
+      loadSettings();
+
+      document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
+    }
+
+    async function loadSettings() {
+      try {
+        const s = await apiRequest('/api/admin/settings');
+        if (s.stagePolicies) {
+          document.getElementById('sla-confirm-target').value = s.stagePolicies.CONFIRMATION?.targetDurationMinutes || 1440;
+          document.getElementById('sla-confirm-warning').value = s.stagePolicies.CONFIRMATION?.warningThresholdMinutes || 360;
+
+          document.getElementById('sla-pack-target').value = s.stagePolicies.PACKAGING?.targetDurationMinutes || 2880;
+          document.getElementById('sla-pack-warning').value = s.stagePolicies.PACKAGING?.warningThresholdMinutes || 720;
+
+          document.getElementById('sla-doc-target').value = s.stagePolicies.DOCUMENTATION?.targetDurationMinutes || 1440;
+          document.getElementById('sla-doc-warning').value = s.stagePolicies.DOCUMENTATION?.warningThresholdMinutes || 360;
+
+          document.getElementById('sla-del-target').value = s.stagePolicies.DELIVERY?.targetDurationMinutes || 4320;
+          document.getElementById('sla-del-warning').value = s.stagePolicies.DELIVERY?.warningThresholdMinutes || 1440;
+        }
+
+        if (s.publicDashboard) {
+          document.getElementById('pref-show-customer').checked = !!s.publicDashboard.showCustomerName;
+          document.getElementById('pref-show-expected').checked = s.publicDashboard.showExpectedDelivery !== false;
+        }
+
+        if (s.timezone) {
+          document.getElementById('pref-timezone').value = s.timezone;
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function saveSettings() {
+      const btn = document.getElementById('save-settings-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const payload = {
+        stagePolicies: {
+          CONFIRMATION: {
+            targetDurationMinutes: parseInt(document.getElementById('sla-confirm-target').value, 10),
+            warningThresholdMinutes: parseInt(document.getElementById('sla-confirm-warning').value, 10),
+            enabled: true,
+          },
+          PACKAGING: {
+            targetDurationMinutes: parseInt(document.getElementById('sla-pack-target').value, 10),
+            warningThresholdMinutes: parseInt(document.getElementById('sla-pack-warning').value, 10),
+            enabled: true,
+          },
+          DOCUMENTATION: {
+            targetDurationMinutes: parseInt(document.getElementById('sla-doc-target').value, 10),
+            warningThresholdMinutes: parseInt(document.getElementById('sla-doc-warning').value, 10),
+            enabled: true,
+          },
+          DELIVERY: {
+            targetDurationMinutes: parseInt(document.getElementById('sla-del-target').value, 10),
+            warningThresholdMinutes: parseInt(document.getElementById('sla-del-warning').value, 10),
+            enabled: true,
+          },
+        },
+        publicDashboard: {
+          showCustomerName: document.getElementById('pref-show-customer').checked,
+          showExpectedDelivery: document.getElementById('pref-show-expected').checked,
+          showProjectName: true,
+        },
+        timezone: document.getElementById('pref-timezone').value,
+      };
+
+      try {
+        await apiRequest('/api/admin/settings', {
+          method: 'PATCH',
+          body: JSON.stringify(payload),
+        });
+        showToast('System settings and stage SLA policies updated!', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Configuration';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initSettings);
+  </script>
+</body>
+</html>
