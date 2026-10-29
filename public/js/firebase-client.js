@@ -8,9 +8,25 @@ import { apiRequest, showToast } from './api.js';
 let firebaseApp = null;
 let firebaseAuth = null;
 
+export const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC45XQMClcfIlTAcrsGCMde-KWAT_-zhIU",
+  authDomain: "blindspot-214d7.firebaseapp.com",
+  projectId: "blindspot-214d7",
+  storageBucket: "blindspot-214d7.firebasestorage.app",
+  messagingSenderId: "645162862785",
+  appId: "1:645162862785:web:2d869c1e90868a3a322c40",
+};
+
 export async function getFirebaseConfig() {
-  const data = await apiRequest('/api/config');
-  return data.firebase;
+  try {
+    const data = await apiRequest('/api/config');
+    if (data?.firebase?.apiKey) {
+      return data.firebase;
+    }
+  } catch (err) {
+    console.warn('[firebase-client] Failed to load /api/config, using default:', err);
+  }
+  return DEFAULT_FIREBASE_CONFIG;
 }
 
 export async function initFirebaseClient() {

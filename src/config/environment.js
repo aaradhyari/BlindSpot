@@ -21,13 +21,13 @@ const env = {
     : undefined,
   GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 
-  // Firebase Web (public — injected into client HTML)
-  FIREBASE_WEB_API_KEY: process.env.FIREBASE_WEB_API_KEY || '',
-  FIREBASE_WEB_AUTH_DOMAIN: process.env.FIREBASE_WEB_AUTH_DOMAIN || '',
-  FIREBASE_WEB_PROJECT_ID: process.env.FIREBASE_WEB_PROJECT_ID || '',
-  FIREBASE_WEB_STORAGE_BUCKET: process.env.FIREBASE_WEB_STORAGE_BUCKET || '',
-  FIREBASE_WEB_MESSAGING_SENDER_ID: process.env.FIREBASE_WEB_MESSAGING_SENDER_ID || '',
-  FIREBASE_WEB_APP_ID: process.env.FIREBASE_WEB_APP_ID || '',
+  // Firebase Web (public — safe in client code)
+  FIREBASE_WEB_API_KEY: process.env.FIREBASE_WEB_API_KEY || 'AIzaSyC45XQMClcfIlTAcrsGCMde-KWAT_-zhIU',
+  FIREBASE_WEB_AUTH_DOMAIN: process.env.FIREBASE_WEB_AUTH_DOMAIN || 'blindspot-214d7.firebaseapp.com',
+  FIREBASE_WEB_PROJECT_ID: process.env.FIREBASE_WEB_PROJECT_ID || 'blindspot-214d7',
+  FIREBASE_WEB_STORAGE_BUCKET: process.env.FIREBASE_WEB_STORAGE_BUCKET || 'blindspot-214d7.firebasestorage.app',
+  FIREBASE_WEB_MESSAGING_SENDER_ID: process.env.FIREBASE_WEB_MESSAGING_SENDER_ID || '645162862785',
+  FIREBASE_WEB_APP_ID: process.env.FIREBASE_WEB_APP_ID || '1:645162862785:web:2d869c1e90868a3a322c40',
 
   // Session
   SESSION_SECRET: process.env.SESSION_SECRET || 'dev-session-secret-change-me',
